@@ -1,8 +1,5 @@
-# -*-coding:utf-8-*-
-
 """授業変更の一覧のデータを扱うためのモジュール
 """
-
 
 import tabula
 import pandas as pd
@@ -62,15 +59,16 @@ def _pdf_to_csv(input_path, output_path):
     # 正規表現で月と日を抽出
     ptn = re.compile(u'([1-9]|10|11|12)月([1-3]?[0-9])日')
     text = list(df['date'])
-    print text
+    print(text)
     _ = list(map(lambda s: re.search(ptn, s), text))
     m_list = list(map(lambda m: int(m.group(1)), _))
     d_list = list(map(lambda m: int(m.group(2)), _))
     # pdfファイルの製作日時を取得(表に年が載ってない)
-    _ = os.path.getctime(input_path)
+    _ = os.stat(input_path).st_mtime
     pdf_day = datetime.datetime.fromtimestamp(_)
     # 年度に変換(製作日時が1〜2月なら年-1)(3月は授業がないので次年度扱い)
     _ = pdf_day.year
+    print(pdf_day)
     if pdf_day.month < 3:
         _ -= 1
     # 日付のリスト
@@ -86,16 +84,10 @@ def _pdf_to_csv(input_path, output_path):
     df['date'] = date_list
 
     # 列の位置を調整
-    df2 = df.ix[:, ['date',
-                    'day',
-                    'period',
-                    'grade',
-                    'department',
-                    'before_subject',
-                    'before_teacher',
-                    'after_subject',
-                    'after_teacher',
-                    'note']]
+    df2 = df.ix[:, [
+        'date', 'day', 'period', 'grade', 'department', 'before_subject',
+        'before_teacher', 'after_subject', 'after_teacher', 'note'
+    ]]
 
     # csv書き出し
     df2.to_csv(output_path, encoding='utf-8')
@@ -123,51 +115,51 @@ def main():
     """テスト用関数
     """
     # バッファ(csv)からデータ取得
-    cd = get_data(False)
+    # cd = get_data(True)
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
-    # cd = get_data(False)
+    cd = get_data(False)
 
     # とりあえず出力
-    print '===== all data ====='
-    print cd
+    print('===== all data =====')
+    print(cd)
 
     # 各要素の名前
-    print '===== element ====='
+    print('===== element =====')
     # .ix[行, 列]で指定
     # 0番目のデータの日付を表示
-    print cd.ix[0, 'date']
+    print(cd.ix[0, 'date'])
     # 曜日を表示
-    print cd.ix[0, 'day']
+    print(cd.ix[0, 'day'])
     # 日付から曜日取得もできる(0が月〜6が日)
-    print cd.ix[0, 'date'].weekday()
+    print(cd.ix[0, 'date'].weekday())
     # 時限
-    print cd.ix[0, 'period']
+    print(cd.ix[0, 'period'])
     # 学年
-    print cd.ix[0, 'grade']
+    print(cd.ix[0, 'grade'])
     # 学科
-    print cd.ix[0, 'department']
+    print(cd.ix[0, 'department'])
     # 変更前教科
-    print cd.ix[0, 'before_subject']
+    print(cd.ix[0, 'before_subject'])
     # 変更前教師
-    print cd.ix[0, 'before_teacher']
+    print(cd.ix[0, 'before_teacher'])
     # 変更後教科
-    print cd.ix[0, 'after_subject']
+    print(cd.ix[0, 'after_subject'])
     # 変更後教科
-    print cd.ix[0, 'after_teacher']
+    print(cd.ix[0, 'after_teacher'])
     # 備考
-    print cd.ix[0, 'note']
+    print(cd.ix[0, 'note'])
 
     # 5Eの授業変更を抽出
     # E(J)とE(E)は別学科扱いなので
     # mapを使ってそれぞれの要素の一文字目を取り出し、
     # それがEかどうかをチェック
-    print '===== 5E data ====='
+    print('===== 5E data =====')
     e5_data = cd[(cd.grade == 5) & (cd.department.map(lambda s: s[0]) == 'E')]
-    print e5_data
+    print(e5_data)
     # レコード長はlenで取得
-    print len(e5_data.index)
+    print(len(e5_data.index))
 
 
 if __name__ == '__main__':
