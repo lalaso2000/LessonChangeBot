@@ -2,7 +2,7 @@
 """
 
 import tweepy
-import classData
+import lessonData
 
 
 class TweetBot:
@@ -37,26 +37,30 @@ class TweetBot:
 
 def main():
     # 授業変更をチェックする
-    update = classData.updateCheck(
+    update = lessonData.updateCheck(
         url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
         file_path='test.pdf')
+    print('update:{}'.format(update))
     if update:
-        cd = classData.get_data(
+        cd = lessonData.get_data(
             False, pdf_path='test.pdf', csv_path='test.csv')
     else:
-        cd = classData.get_data(True)
+        cd = lessonData.get_data(True)
+    print(cd)
 
     # 5Eの授業変更を取り出す
-    data_5e = cd[(cd['grade'] == 5)
+    data_5e = cd[(cd['grade'] == 4)
                  & (cd['department'].map(lambda s: s[0]) == 'E')]
     print(data_5e)
 
     # メッセージを作る
-    msg = classData.create_tweet(data_5e.iloc[2])
+    msg = lessonData.create_tweet(data_5e.iloc[0])
+    print(msg)
 
     # twitterのbotを呼び出す
     tbot = TweetBot()
     tbot.api.update_status(status=msg)
+    print('tweet')
 
 
 if __name__ == '__main__':

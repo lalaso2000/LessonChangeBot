@@ -178,7 +178,7 @@ def updateCheck(url='http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf',
         os.rename(n_file_path, file_path)
         return True
     # 前のやつと中身を比較
-    if not filecmp.cmp(file_path, n_file_path):
+    elif not filecmp.cmp(file_path, n_file_path):
         # 違う＝更新された
         # 古いのを消して、新しいのをリネーム
         os.remove(file_path)
@@ -205,7 +205,7 @@ def create_tweet(data):
     msg += '{0}{1}'.format(data['grade'], data['department'])
     msg += '授業変更】\n'
     date = pd.to_datetime(data['date'])
-    msg += '{0:%m/%d}  '.format(date)
+    msg += '{0:%m月%d日}  '.format(date)
     msg += '{0}限'.format(int(data['period']))
     msg += '\n'
     msg += '{}'.format(data['before_subject'])
@@ -213,7 +213,7 @@ def create_tweet(data):
     msg += '\n↓\n'
     msg += '{}'.format(data['after_subject'])
     msg += '({})'.format(data['after_teacher'])
-    print(msg)
+    # print(msg)
     return msg
 
 
