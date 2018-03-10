@@ -33,7 +33,7 @@ def _pdf_to_csv(input_path, output_path):
 
     for i in range(0, len(df.index)):
         # 各ページの先頭の見出し行を削除
-        if df.ix[i, 'date'] == u'月日':
+        if df.ix[i, 'date'] == '月日':
             df.drop(i, inplace=True)
             if i != 0:
                 df.drop(i - 1, inplace=True)
@@ -57,7 +57,7 @@ def _pdf_to_csv(input_path, output_path):
     df.drop('department_and_grade', axis=1, inplace=True)
 
     # 正規表現で月と日を抽出
-    ptn = re.compile(u'([1-9]|10|11|12)月([1-3]?[0-9])日')
+    ptn = re.compile('([1-9]|10|11|12)月([1-3]?[0-9])日')
     text = list(df['date'])
     print(text)
     _ = list(map(lambda s: re.search(ptn, s), text))
@@ -82,6 +82,12 @@ def _pdf_to_csv(input_path, output_path):
         date_list.append(date)
     df.drop('date', axis=1, inplace=True)
     df['date'] = date_list
+
+    # 曜日を数値に変換
+    day_list = list(df['date'].map(lambda d: d.weekday()))
+    print(day_list)
+    df.drop('day', axis=1, inplace=True)
+    df['day'] = day_list
 
     # 列の位置を調整
     df2 = df.ix[:, [
@@ -119,37 +125,39 @@ def main():
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
-    cd = get_data(False)
+    cd = get_data(False, pdf_path='keijiyou-3.pdf', csv_path='buf-3.csv')
 
     # とりあえず出力
     print('===== all data =====')
     print(cd)
 
     # 各要素の名前
-    print('===== element =====')
+    print('===== first element =====')
     # .ix[行, 列]で指定
     # 0番目のデータの日付を表示
-    print(cd.ix[0, 'date'])
-    # 曜日を表示
-    print(cd.ix[0, 'day'])
-    # 日付から曜日取得もできる(0が月〜6が日)
-    print(cd.ix[0, 'date'].weekday())
+    print('date = {}'.format(cd.ix[0, 'date']))
+    # 曜日を表示(数値で保存されている)(0が月曜日...6が日曜日)
+    print('day = {}'.format(cd.ix[0, 'day']))
+    # わかりやすく表示する
+    yobi_list = ['月', '火', '水', '木', '金', '土', '日']
+    yobi = yobi_list[cd.ix[0, 'day']]
+    print('曜日 = {}'.format(yobi))
     # 時限
-    print(cd.ix[0, 'period'])
+    print('period = {}'.format(cd.ix[0, 'period']))
     # 学年
-    print(cd.ix[0, 'grade'])
+    print('grade = {}'.format(cd.ix[0, 'grade']))
     # 学科
-    print(cd.ix[0, 'department'])
+    print('department = {}'.format(cd.ix[0, 'department']))
     # 変更前教科
-    print(cd.ix[0, 'before_subject'])
+    print('before_subject = {}'.format(cd.ix[0, 'before_subject']))
     # 変更前教師
-    print(cd.ix[0, 'before_teacher'])
+    print('before_teacher = {}'.format(cd.ix[0, 'before_teacher']))
     # 変更後教科
-    print(cd.ix[0, 'after_subject'])
+    print('after_subject = {}'.format(cd.ix[0, 'after_subject']))
     # 変更後教科
-    print(cd.ix[0, 'after_teacher'])
+    print('after_teacher = {}'.format(cd.ix[0, 'after_teacher']))
     # 備考
-    print(cd.ix[0, 'note'])
+    print('note = {}'.format(cd.ix[0, 'note']))
 
     # 5Eの授業変更を抽出
     # E(J)とE(E)は別学科扱いなので
