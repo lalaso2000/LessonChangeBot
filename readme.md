@@ -1,4 +1,4 @@
-NIT-Gifu Class-Change-PDF Support Tool
+NIT-Gifu Lesson-Change-PDF Support Tool
 ====
 
 岐阜高専における授業変更pdfの表を扱いやすくするためのpythonのモジュール群です。
@@ -10,6 +10,13 @@ NIT-Gifu Class-Change-PDF Support Tool
 * 変更を毎日チェック
 * つぶやく
 * ~~電子黒板に掲示~~
+
+
+## 使い方
+### tweet bot
+1. ラズパイか何かをサーバーにする
+1. 毎日正午に`noon.py`を定期実行
+1. つぶやきたいタイミングで`tweet.py`を定期実行
 
 
 ## Requirement
