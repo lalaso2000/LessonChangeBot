@@ -7,7 +7,8 @@ NIT-Gifu Class-Change-PDF Support Tool
 
 ## できること
 * pdfをcsvに変換
-* ~~変更を毎日チェック~~
+* 変更を毎日チェック
+* つぶやく
 * ~~電子黒板に掲示~~
 
 
