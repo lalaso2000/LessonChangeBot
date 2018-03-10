@@ -6,6 +6,8 @@ import pandas as pd
 import re
 import datetime
 import os
+import urllib.request
+import filecmp
 
 
 def _pdf_to_csv(input_path, output_path):
@@ -93,7 +95,7 @@ def _pdf_to_csv(input_path, output_path):
     # 小数第一位が0 -> フル授業
     #             1 -> 前半
     #             2 -> 後半
-    period_list = list(df['period'].map(lambda p: _convert_period(p)))
+    period_list = list(df['period'].map(lambda p: __convert_period__(p)))
     # print(period_list)
     df.drop('period', axis=1, inplace=True)
     df['period'] = period_list
@@ -108,7 +110,7 @@ def _pdf_to_csv(input_path, output_path):
     df2.to_csv(output_path, encoding='utf-8')
 
 
-def _convert_period(period_string):
+def __convert_period__(period_string):
     """時限を数値に変換
        小数第一位が0 -> フル授業
                    1 -> 前半
@@ -154,6 +156,65 @@ def get_data(buf, pdf_path='keijiyou.pdf', csv_path='buf.csv'):
 
     # データ読み込み
     return pd.read_csv(csv_path, parse_dates=['date'])
+
+
+def updateCheck(url='http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf',
+                file_path='keijiyou.pdf'):
+    """ファイルの更新があったかをチェック
+
+    Keyword Arguments:
+        url {str} -- 授業変更pdfのURL (default: {'http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf'})
+        file_path {str} -- ダウンロードしたpdfのパス(名前) (default: {'keijiyou.pdf'})
+
+    Returns:
+        bool -- 更新があったかどうか(あればTrue)
+    """
+
+    # まず落とす
+    n_file_path = 'new.pdf'
+    urllib.request.urlretrieve(url, n_file_path)
+    # 前のやつがない
+    if not os.path.exists(file_path):
+        os.rename(n_file_path, file_path)
+        return True
+    # 前のやつと中身を比較
+    if not filecmp.cmp(file_path, n_file_path):
+        # 違う＝更新された
+        # 古いのを消して、新しいのをリネーム
+        os.remove(file_path)
+        os.rename(n_file_path, file_path)
+        return True
+    else:
+        # ダウンロードしたのを消す
+        os.remove(n_file_path)
+        return False
+
+
+def create_tweet(data):
+    """つぶやき本文の作成
+
+    Arguments:
+        data {dataFrame} -- つぶやき対象の授業変更データ
+
+    Returns:
+        string -- つぶやく文字列
+    """
+
+    # つぶやく本文を作る
+    msg = '【'
+    msg += '{0}{1}'.format(data['grade'], data['department'])
+    msg += '授業変更】\n'
+    date = pd.to_datetime(data['date'])
+    msg += '{0:%m/%d}  '.format(date)
+    msg += '{0}限'.format(int(data['period']))
+    msg += '\n'
+    msg += '{}'.format(data['before_subject'])
+    msg += '({})'.format(data['before_teacher'])
+    msg += '\n↓\n'
+    msg += '{}'.format(data['after_subject'])
+    msg += '({})'.format(data['after_teacher'])
+    print(msg)
+    return msg
 
 
 def main():

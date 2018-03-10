@@ -2,9 +2,7 @@
 """
 
 import tweepy
-import updateChecker
 import classData
-import pandas as pd
 
 
 class TweetBot:
@@ -39,7 +37,7 @@ class TweetBot:
 
 def main():
     # 授業変更をチェックする
-    update = updateChecker.updateCheck(
+    update = classData.updateCheck(
         url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
         file_path='test.pdf')
     if update:
@@ -53,21 +51,9 @@ def main():
                  & (cd['department'].map(lambda s: s[0]) == 'E')]
     print(data_5e)
 
-    # つぶやく本文を作る
-    msg = '【'
-    msg += '{0}{1}'.format(data_5e['grade'].values[0],
-                           data_5e['department'].values[0])
-    msg += '授業変更】\n'
-    date = pd.to_datetime(data_5e['date'].values[0])
-    msg += '{0:%m/%d}  '.format(date)
-    msg += '{0}限'.format(int(data_5e['period'].values[0]))
-    msg += '\n'
-    msg += '{}'.format(data_5e['before_subject'].values[0])
-    msg += '({})'.format(data_5e['before_teacher'].values[0])
-    msg += '\n↓\n'
-    msg += '{}'.format(data_5e['after_subject'].values[0])
-    msg += '({})'.format(data_5e['after_teacher'].values[0])
-    print(msg)
+    # メッセージを作る
+    msg = classData.create_tweet(data_5e.iloc[2])
+
     # twitterのbotを呼び出す
     tbot = TweetBot()
     tbot.api.update_status(status=msg)
