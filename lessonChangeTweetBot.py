@@ -48,13 +48,16 @@ def main():
         cd = lessonData.get_data(True)
     print(cd)
 
-    # 5Eの授業変更を取り出す
-    data_5e = cd[(cd['grade'] == 4)
-                 & (cd['department'].map(lambda s: s[0]) == 'E')]
-    print(data_5e)
+    # 4Eの授業変更を取り出す
+    data_3e = lessonData.search_for_class(cd, grade=3, department='E')
+    print(data_3e)
+
+    # 3Eの2/22の授業変更を検索
+    data_3e_2_22 = lessonData.search_for_date(data_3e, date='2018/2/22')
+    print(data_3e_2_22)
 
     # メッセージを作る
-    msg = lessonData.create_tweet(data_5e.iloc[0])
+    msg = lessonData.create_tweet(data_3e_2_22.iloc[0])
     print(msg)
 
     # twitterのbotを呼び出す

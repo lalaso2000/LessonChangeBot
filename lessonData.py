@@ -205,7 +205,7 @@ def create_tweet(data):
     msg += '{0}{1}'.format(data['grade'], data['department'])
     msg += '授業変更】\n'
     date = pd.to_datetime(data['date'])
-    msg += '{0:%m月%d日}  '.format(date)
+    msg += '{0:%-m月%-d日}  '.format(date)
     msg += '{0}限'.format(int(data['period']))
     msg += '\n'
     msg += '{}'.format(data['before_subject'])
@@ -215,6 +215,61 @@ def create_tweet(data):
     msg += '({})'.format(data['after_teacher'])
     # print(msg)
     return msg
+
+
+def search_for_class(data, grade=0, department='any'):
+    """クラスで検索
+
+    Arguments:
+        data {dataFrame} -- 授業変更の全体データ
+
+    Keyword Arguments:
+        grade {int} -- 学年(指定しない場合は0) (default: {0})
+        department {str} -- 学科(指定しない場合は'any') (default: {'any'})
+
+    Returns:
+        dataFrame -- 検索結果
+    """
+
+    if grade == 0 and department == 'any':
+        return data
+    elif grade == 0:
+        # 学科で検索
+        if len(department) == 1:
+            return data[data['department'].map(lambda s: s[0] == department)]
+        else:
+            return data[data['department'] == department]
+    elif department == 'any':
+        # 学年で検索
+        return data[data['grade'] == grade]
+    else:
+        # 学年＆学科で検索
+        if len(department) == 1:
+            return data[(data['grade'] == grade) &
+                        (data['department'].map(lambda s: s[0] == department))]
+        else:
+            return data[(data['grade'] == grade)
+                        & (data['department'] == department)]
+
+
+def search_for_date(data, date='any-any-any'):
+    """日付で検索
+
+    Arguments:
+        data {dataFrame} -- 全体データ
+
+    Keyword Arguments:
+        date {str} -- 日付(日本語を含まない日付っぽいフォーマットならだいたい大丈夫) (default: {'any-any-any'})
+
+    Returns:
+        dataFrame -- 検索結果
+    """
+
+    if date == 'any-any-any':
+        return data
+    else:
+        d = pd.to_datetime(date)
+        return data[data['date'] == d]
 
 
 def main():
