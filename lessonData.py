@@ -252,24 +252,19 @@ def search_for_class(data, grade=0, department='any'):
                         & (data['department'] == department)]
 
 
-def search_for_date(data, date='any-any-any'):
+def search_for_date(data, date=datetime.date(1970, 1, 1)):
     """日付で検索
 
     Arguments:
         data {dataFrame} -- 全体データ
 
     Keyword Arguments:
-        date {str} -- 日付(日本語を含まない日付っぽいフォーマットならだいたい大丈夫) (default: {'any-any-any'})
+        date {datetime.date} -- 日付 (default: {datetime.date(1970, 1, 1)})
 
     Returns:
         dataFrame -- 検索結果
     """
-
-    if date == 'any-any-any':
-        return data
-    else:
-        d = pd.to_datetime(date)
-        return data[data['date'] == d]
+    return data[data['date'] == date]
 
 
 def main():
