@@ -125,7 +125,7 @@ def main():
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
-    cd = get_data(False, pdf_path='keijiyou-3.pdf', csv_path='buf-3.csv')
+    cd = get_data(False)
 
     # とりあえず出力
     print('===== all data =====')
