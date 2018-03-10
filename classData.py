@@ -93,7 +93,7 @@ def _pdf_to_csv(input_path, output_path):
     # 小数第一位が0 -> フル授業
     #             1 -> 前半
     #             2 -> 後半
-    period_list = list(df['period'].map(lambda p: convertPeriod(p)))
+    period_list = list(df['period'].map(lambda p: _convert_period(p)))
     # print(period_list)
     df.drop('period', axis=1, inplace=True)
     df['period'] = period_list
@@ -108,7 +108,7 @@ def _pdf_to_csv(input_path, output_path):
     df2.to_csv(output_path, encoding='utf-8')
 
 
-def convertPeriod(period_string):
+def _convert_period(period_string):
     """時限を数値に変換
        小数第一位が0 -> フル授業
                    1 -> 前半
