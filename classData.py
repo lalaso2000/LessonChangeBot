@@ -59,7 +59,7 @@ def _pdf_to_csv(input_path, output_path):
     # 正規表現で月と日を抽出
     ptn = re.compile('([1-9]|10|11|12)月([1-3]?[0-9])日')
     text = list(df['date'])
-    print(text)
+    # print(text)
     _ = list(map(lambda s: re.search(ptn, s), text))
     m_list = list(map(lambda m: int(m.group(1)), _))
     d_list = list(map(lambda m: int(m.group(2)), _))
@@ -68,7 +68,7 @@ def _pdf_to_csv(input_path, output_path):
     pdf_day = datetime.datetime.fromtimestamp(_)
     # 年度に変換(製作日時が1〜2月なら年-1)(3月は授業がないので次年度扱い)
     _ = pdf_day.year
-    print(pdf_day)
+    # print(pdf_day)
     if pdf_day.month < 3:
         _ -= 1
     # 日付のリスト
@@ -85,9 +85,18 @@ def _pdf_to_csv(input_path, output_path):
 
     # 曜日を数値に変換
     day_list = list(df['date'].map(lambda d: d.weekday()))
-    print(day_list)
+    # print(day_list)
     df.drop('day', axis=1, inplace=True)
     df['day'] = day_list
+
+    # 時限を数値に変換
+    # 小数第一位が0 -> フル授業
+    #             1 -> 前半
+    #             2 -> 後半
+    period_list = list(df['period'].map(lambda p: convertPeriod(p)))
+    # print(period_list)
+    df.drop('period', axis=1, inplace=True)
+    df['period'] = period_list
 
     # 列の位置を調整
     df2 = df.ix[:, [
@@ -97,6 +106,36 @@ def _pdf_to_csv(input_path, output_path):
 
     # csv書き出し
     df2.to_csv(output_path, encoding='utf-8')
+
+
+def convertPeriod(period_string):
+    """時限を数値に変換
+       小数第一位が0 -> フル授業
+                   1 -> 前半
+                   2 -> 後半
+
+    Arguments:
+        period_string {String} -- 時限の文字列
+
+    Returns:
+        float -- 時限の数値
+    """
+    # 一応1-8まで対応
+    p_str = period_string
+    p_num = 0
+    if p_str[:2] == 'IV':
+        p_num += 4
+        p_str = p_str[2:]
+    for c in p_str:
+        if c == 'I':
+            p_num += 1
+        elif c == 'V':
+            p_num += 5
+        elif c == 'a':
+            p_num += 0.1
+        elif c == 'b':
+            p_num += 0.2
+    return p_num
 
 
 def get_data(buf, pdf_path='keijiyou.pdf', csv_path='buf.csv'):
