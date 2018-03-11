@@ -234,6 +234,9 @@ def create_tweet(data):
     msg += '\n↓\n'
     msg += '{}'.format(data['after_subject'])
     msg += '({})'.format(data['after_teacher'])
+    if not pd.isnull(data['note']):
+        msg += '\n'
+        msg += '※{}'.format(data['note'])
     # print(msg)
     return msg
 
