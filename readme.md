@@ -15,8 +15,8 @@ NIT-Gifu Lesson-Change-PDF Support Tool
 ## 使い方
 ### tweet bot
 1. ラズパイか何かをサーバーにする
-1. 毎日`tomorrowCheck.py`を定期実行
-1. つぶやきたいタイミングで`tweet.py`を定期実行
+1. 毎日`checkAndTweet.py`を定期実行。明日授業変更があるならここでつぶやきます。
+1. リツイートしたいタイミングで`retweet.py`を定期実行。次に`checkAndTweet.py`を実行するまでリツイートし続けます。
 
 
 ## Requirement
