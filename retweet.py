@@ -3,9 +3,13 @@
 
 import tweetBot
 import csv
+import logging.config
 
 
 def main():
+    # ロガー設定
+    logging.config.fileConfig('logging.conf')
+
     # bot起動
     tbot = tweetBot.TweetBot()
     # リツイートするidリストを読み込む

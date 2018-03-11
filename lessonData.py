@@ -9,6 +9,10 @@ import os
 import urllib.request
 import filecmp
 import time
+from logging import getLogger
+
+# ロガー設定
+logger = getLogger()
 
 
 def _pdf_to_csv(input_path, output_path):
@@ -160,8 +164,10 @@ def get_data(buf, pdf_path='keijiyou.pdf', csv_path='buf.csv'):
                 f.write(
                     ',date,day,period,grade,department,before_subject,before_teacher,after_subject,after_teacher,note\n'
                 )
-            print('ERROR : pdfに問題があります。授業変更がない可能性があります。')
-            print(e)
+            # print('ERROR : pdfに問題があります。授業変更がない可能性があります。')
+            # print(e)
+            logger.log(30, 'pdfに問題があります。ローカルの情報を使います。')
+            logger.log(30, '詳細:{}'.format(e))
     # データ読み込み
     return pd.read_csv(csv_path, parse_dates=['date'])
 
@@ -184,14 +190,16 @@ def updateCheck(url='http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf',
         try:
             urllib.request.urlretrieve(url, n_file_path)
         except Exception as e:
-            print('INFO : 最新のpdfの取得に失敗しました。リトライしています...({}/3)'.format(i))
+            # print('INFO : 最新のpdfの取得に失敗しました。リトライしています...({}/3)'.format(i))
+            logger.log(30, '最新のpdfの取得に失敗しました。リトライします...({}/3)'.format(i))
             time.sleep(i * 5)
         else:
             # DLできた
             # 前のやつがない
             if not os.path.exists(file_path):
                 os.rename(n_file_path, file_path)
-                print('INFO : 過去のpdfがありませんでした。最新のデータを適用します。')
+                # print('INFO : 過去のpdfがありませんでした。最新のデータを適用します。')
+                logger.log(20, '過去のpdfがありませんでした。最新のデータを適用します。')
                 return True
             # 前のやつと中身を比較
             elif not filecmp.cmp(file_path, n_file_path):
@@ -199,15 +207,18 @@ def updateCheck(url='http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf',
                 # 古いのを消して、新しいのをリネーム
                 os.remove(file_path)
                 os.rename(n_file_path, file_path)
-                print('INFO : pdfに更新が見つかりました。最新のデータを適用します。')
+                # print('INFO : pdfに更新が見つかりました。最新のデータを適用します。')
+                logger.log(20, 'pdfに更新が見つかりました。最新のデータを適用します。')
                 return True
             else:
                 # ダウンロードしたのを消す
                 os.remove(n_file_path)
-                print('INFO : pdfに更新は見つかりませんでした。')
+                # print('INFO : pdfに更新は見つかりませんでした。')
+                logger.log(20, 'pdfに更新は見つかりませんでした。ローカルの情報を適用します。')
                 return False
     # リトライも失敗
-    print('ERROR : 最新のpdfの取得に失敗しました。データが正しくない可能性があります。')
+    # print('ERROR : 最新のpdfの取得に失敗しました。データが正しくない可能性があります。')
+    logger.log(40, '最新のpdfの取得に失敗しました。データが正しくない可能性があります。')
     return False
 
 

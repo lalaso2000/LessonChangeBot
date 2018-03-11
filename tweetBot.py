@@ -3,6 +3,10 @@
 
 import tweepy
 import time
+from logging import getLogger
+
+# ロガー設定
+logger = getLogger()
 
 
 class TweetBot:
@@ -10,7 +14,7 @@ class TweetBot:
     """
 
     def __init__(self, key_file_path='keys.txt'):
-        """キーの初期化
+        """キーの初期化等
 
         Arguments:
             key_file_path {string} -- キーが書かれたテキストファイルのパス
@@ -48,11 +52,14 @@ class TweetBot:
             try:
                 result = self.api.update_status(status=msg)
             except Exception as e:
-                print('ERROR : ツイートに失敗しました。リトライしています。({}/3)'.format(i))
+                # print('ERROR : ツイートに失敗しました。リトライしています。({}/3)'.format(i))
+                logger.log(30, 'ツイートに失敗しました。リトライします。({}/3)'.format(i))
                 time.sleep(i * 5)
             else:
+                logger.log(20, 'ツイート \n {}'.format(result.text))
                 return result
-        print('ERROR : ツイートに失敗しました。このツイートは破棄されます。')
+        # print('ERROR : ツイートに失敗しました。このツイートは破棄されます。')
+        logger.log(40, 'ツイートに失敗しました。このツイートは破棄されます。')
         return None
 
     def retweet(self, id):
@@ -75,9 +82,12 @@ class TweetBot:
                     self.api.destroy_status(status.current_user_retweet['id'])
                 result = self.api.retweet(id)
             except Exception as e:
-                print('ERROR : リツイートに失敗しました。リトライしています。({}/3)'.format(i))
+                # print('ERROR : リツイートに失敗しました。リトライしています。({}/3)'.format(i))
+                logger.log(30, 'リツイートに失敗しました。リトライします。({}/3)'.format(i))
                 time.sleep(i * 5)
             else:
+                logger.log(20, 'リツイート \n {}'.format(result.text))
                 return result
-        print('ERROR : リツイートに失敗しました。')
+        # print('ERROR : リツイートに失敗しました。')
+        logger.log(40, 'リツイートに失敗しました。')
         return None
