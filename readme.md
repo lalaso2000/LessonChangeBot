@@ -9,13 +9,15 @@ NIT-Gifu Lesson-Change-PDF Support Tool
 * pdfをcsvに変換
 * 変更を毎日チェック
 * つぶやく
+* クラスラインに通知
 * ~~電子黒板に掲示~~
 
 
 ## 使い方
 ### tweet bot
 1. ラズパイか何かをサーバーにする
-1. 毎日`checkAndTweet.py`を定期実行。明日授業変更があるならここでつぶやきます。
+1. 毎日`check.py`を定期実行。`tomorrow.csv`に明日の授業変更が書き込まれます。
+1. ツイートするなら`tweet.py`を、ラインに送るなら`line.py`を実行。
 1. リツイートしたいタイミングで`retweet.py`を定期実行。次に`checkAndTweet.py`を実行するまでリツイートし続けます。
 
 
@@ -25,6 +27,7 @@ NIT-Gifu Lesson-Change-PDF Support Tool
         * tabula-pyに必要
         * 7か8
 * pandas
+* tweepy
 
 
 ## Licence
