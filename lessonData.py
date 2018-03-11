@@ -152,8 +152,14 @@ def get_data(buf, pdf_path='keijiyou.pdf', csv_path='buf.csv'):
 
     # バッファ更新
     if buf is False:
-        _pdf_to_csv(pdf_path, csv_path)
-
+        try:
+            _pdf_to_csv(pdf_path, csv_path)
+        except Exception as e:
+            with open(csv_path, 'w') as f:
+                f.write(
+                    ',date,day,period,grade,department,before_subject,before_teacher,after_subject,after_teacher,note\n'
+                )
+            print('ERROR : pdfに問題があります。授業変更がない可能性があります。')
     # データ読み込み
     return pd.read_csv(csv_path, parse_dates=['date'])
 
@@ -275,39 +281,40 @@ def main():
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
-    cd = get_data(False)
+    cd = get_data(False, pdf_path='keijiyou-e.pdf', csv_path='buf-e.csv')
 
     # とりあえず出力
     print('===== all data =====')
     print(cd)
 
-    # 各要素の名前
-    print('===== first element =====')
-    # .ix[行, 列]で指定
-    # 0番目のデータの日付を表示
-    print('date = {}'.format(cd.ix[0, 'date']))
-    # 曜日を表示(数値で保存されている)(0が月曜日...6が日曜日)
-    print('day = {}'.format(cd.ix[0, 'day']))
-    # わかりやすく表示する
-    yobi_list = ['月', '火', '水', '木', '金', '土', '日']
-    yobi = yobi_list[cd.ix[0, 'day']]
-    print('曜日 = {}'.format(yobi))
-    # 時限
-    print('period = {}'.format(cd.ix[0, 'period']))
-    # 学年
-    print('grade = {}'.format(cd.ix[0, 'grade']))
-    # 学科
-    print('department = {}'.format(cd.ix[0, 'department']))
-    # 変更前教科
-    print('before_subject = {}'.format(cd.ix[0, 'before_subject']))
-    # 変更前教師
-    print('before_teacher = {}'.format(cd.ix[0, 'before_teacher']))
-    # 変更後教科
-    print('after_subject = {}'.format(cd.ix[0, 'after_subject']))
-    # 変更後教科
-    print('after_teacher = {}'.format(cd.ix[0, 'after_teacher']))
-    # 備考
-    print('note = {}'.format(cd.ix[0, 'note']))
+    if len(cd) != 0:
+        # 各要素の名前
+        print('===== first element =====')
+        # .ix[行, 列]で指定
+        # 0番目のデータの日付を表示
+        print('date = {}'.format(cd.ix[0, 'date']))
+        # 曜日を表示(数値で保存されている)(0が月曜日...6が日曜日)
+        print('day = {}'.format(cd.ix[0, 'day']))
+        # わかりやすく表示する
+        yobi_list = ['月', '火', '水', '木', '金', '土', '日']
+        yobi = yobi_list[cd.ix[0, 'day']]
+        print('曜日 = {}'.format(yobi))
+        # 時限
+        print('period = {}'.format(cd.ix[0, 'period']))
+        # 学年
+        print('grade = {}'.format(cd.ix[0, 'grade']))
+        # 学科
+        print('department = {}'.format(cd.ix[0, 'department']))
+        # 変更前教科
+        print('before_subject = {}'.format(cd.ix[0, 'before_subject']))
+        # 変更前教師
+        print('before_teacher = {}'.format(cd.ix[0, 'before_teacher']))
+        # 変更後教科
+        print('after_subject = {}'.format(cd.ix[0, 'after_subject']))
+        # 変更後教科
+        print('after_teacher = {}'.format(cd.ix[0, 'after_teacher']))
+        # 備考
+        print('note = {}'.format(cd.ix[0, 'note']))
 
     # 5Eの授業変更を抽出
     # E(J)とE(E)は別学科扱いなので
