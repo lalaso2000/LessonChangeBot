@@ -10,7 +10,6 @@ def main():
     update = lessonData.updateCheck(
         url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
         file_path='test.pdf')
-    print('update:{}'.format(update))
     if update:
         cd = lessonData.get_data(
             False, pdf_path='test.pdf', csv_path='test.csv')
@@ -23,8 +22,8 @@ def main():
     # print(data_5e)
 
     # 明日の授業変更を探す
-    today = datetime.date.today()
-    # today = datetime.date(2018, 1, 28)  # デバック用
+    # today = datetime.date.today()
+    today = datetime.date(2018, 1, 28)  # デバック用
     td = datetime.timedelta(days=1)
     tomorrow = today + td
     # print(tomorrow)

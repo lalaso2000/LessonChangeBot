@@ -4,6 +4,7 @@
 import tweepy
 import lessonData
 import pandas as pd
+import time
 
 
 class TweetBot:
@@ -50,8 +51,17 @@ def main():
     # twitterのbotを呼び出す
     tbot = TweetBot()
     for m in msg:
-        tbot.api.update_status(status=m)
-        print('tweet')
+        # tbot.api.update_status(status=m)
+        # print('tweet')
+        for i in range(1, 4):
+            try:
+                tbot.api.update_status(status=m)
+            except Exception as e:
+                print('ERROR : ツイートに失敗しました。リトライしています...({}/3)'.format(i))
+                time.sleep(i * 5)
+            else:
+                print('tweet')
+        print('ERROR : ツイートに失敗しました。このツイートは破棄されます。')
 
 
 if __name__ == '__main__':
