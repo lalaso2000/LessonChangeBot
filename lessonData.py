@@ -8,6 +8,7 @@ import datetime
 import os
 import urllib.request
 import filecmp
+import time
 
 
 def _pdf_to_csv(input_path, output_path):
@@ -160,6 +161,7 @@ def get_data(buf, pdf_path='keijiyou.pdf', csv_path='buf.csv'):
                     ',date,day,period,grade,department,before_subject,before_teacher,after_subject,after_teacher,note\n'
                 )
             print('ERROR : pdfに問題があります。授業変更がない可能性があります。')
+            print(e)
     # データ読み込み
     return pd.read_csv(csv_path, parse_dates=['date'])
 
@@ -178,22 +180,35 @@ def updateCheck(url='http://www.gifu-nct.ac.jp/gakka/keijiyou/keijiyou.pdf',
 
     # まず落とす
     n_file_path = 'new.pdf'
-    urllib.request.urlretrieve(url, n_file_path)
-    # 前のやつがない
-    if not os.path.exists(file_path):
-        os.rename(n_file_path, file_path)
-        return True
-    # 前のやつと中身を比較
-    elif not filecmp.cmp(file_path, n_file_path):
-        # 違う＝更新された
-        # 古いのを消して、新しいのをリネーム
-        os.remove(file_path)
-        os.rename(n_file_path, file_path)
-        return True
-    else:
-        # ダウンロードしたのを消す
-        os.remove(n_file_path)
-        return False
+    for i in range(1, 4):
+        try:
+            urllib.request.urlretrieve(url, n_file_path)
+        except Exception as e:
+            print('INFO : 最新のpdfの取得に失敗しました。リトライしています...({}/3)'.format(i))
+            time.sleep(i * 5)
+        else:
+            # DLできた
+            # 前のやつがない
+            if not os.path.exists(file_path):
+                os.rename(n_file_path, file_path)
+                print('INFO : 過去のpdfがありませんでした。最新のデータを適用します。')
+                return True
+            # 前のやつと中身を比較
+            elif not filecmp.cmp(file_path, n_file_path):
+                # 違う＝更新された
+                # 古いのを消して、新しいのをリネーム
+                os.remove(file_path)
+                os.rename(n_file_path, file_path)
+                print('INFO : pdfに更新が見つかりました。最新のデータを適用します。')
+                return True
+            else:
+                # ダウンロードしたのを消す
+                os.remove(n_file_path)
+                print('INFO : pdfに更新は見つかりませんでした。')
+                return False
+    # リトライも失敗
+    print('ERROR : 最新のpdfの取得に失敗しました。データが正しくない可能性があります。')
+    return False
 
 
 def create_tweet(data):
@@ -281,7 +296,19 @@ def main():
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
-    cd = get_data(False, pdf_path='keijiyou-e.pdf', csv_path='buf-e.csv')
+    # cd = get_data(False, pdf_path='keijiyou-e.pdf', csv_path='buf-e.csv')
+
+    # 更新チェックしてからデータ取得
+    # update = updateCheck(
+    #     url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
+    #     file_path='test.pdf')  # デバック用
+    update = updateCheck(
+        url='https://lalasotesttest/testtest/test.pdf',
+        file_path='test.pdf')  # デバック用
+    if update:
+        cd = get_data(False, pdf_path='test.pdf', csv_path='test.csv')
+    else:
+        cd = get_data(True)
 
     # とりあえず出力
     print('===== all data =====')
