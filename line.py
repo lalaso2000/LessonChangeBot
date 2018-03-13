@@ -1,4 +1,4 @@
-"""授業変更を確認し、つぶやく
+"""授業変更を確認し、LINE Notify経由で通知する
 """
 
 import lessonData

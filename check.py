@@ -10,20 +10,21 @@ logging.config.fileConfig('logging.conf')
 logger = logging.getLogger()
 
 # 授業変更をチェックする
-# update = lessonData.updateCheck()
-update = lessonData.updateCheck(
-    url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
-    file_path='test.pdf')  # デバック用
+update = lessonData.updateCheck()
+# update = lessonData.updateCheck(
+#     url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
+#     file_path='test.pdf')  # デバック用
 if update:
-    # cd = lessonData.get_data(False)
-    cd = lessonData.get_data(
-        False, pdf_path='test.pdf', csv_path='test.csv')  # デバック用
+    cd = lessonData.get_data(False)
+    # cd = lessonData.get_data(
+    #     False, pdf_path='test.pdf', csv_path='test.csv')  # デバック用
 else:
-    # cd = lessonData.get_data(True)
-    cd = lessonData.get_data(True, csv_path='test.csv')  # デバック用
+    cd = lessonData.get_data(True)
+    # cd = lessonData.get_data(True, csv_path='test.csv')  # デバック用
 # print(cd)
 
 # 5Eの授業変更を取り出す
+# ここを変えると他のクラスのbotにもなります
 data_5e = lessonData.search_for_class(cd, grade=5, department='E')
 # print(data_5e)
 
