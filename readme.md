@@ -28,7 +28,7 @@ NIT-Gifu Lesson-Change-PDF Support Tool
     YOUR_ACCESS_TOKEN_SECRET
     ```
     
-    - LINE Notifyを使う場合は、[LINE Notyfy](https://notify-bot.line.me/ja/)からトークンを発行し、次のようなテキストファイルを`lineNotify.py`と同じ場所に置いてください。
+    - LINE Notifyを使う場合は、[LINE Notify](https://notify-bot.line.me/ja/)からトークンを発行し、次のようなテキストファイルを`lineNotify.py`と同じ場所に置いてください。
     
     [line_token.txt]
     ```
