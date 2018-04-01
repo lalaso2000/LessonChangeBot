@@ -4,6 +4,8 @@
 import tweepy
 import time
 from logging import getLogger
+import os
+import datetime
 
 # ロガー設定
 logger = getLogger()
@@ -13,27 +15,22 @@ class TweetBot:
     """botのためのクラス
     """
 
-    def __init__(self, key_file_path='keys.txt'):
+    def __init__(self):
         """キーの初期化等
 
         Arguments:
             key_file_path {string} -- キーが書かれたテキストファイルのパス
         """
 
-        # 鍵は辞書形式で保存
-        self.__KEY_DICT__ = {}
-        DICT_KEYS = ['CK', 'CS', 'AT', 'AS']
-        i = 0
-        with open(key_file_path) as f:
-            for line in f:
-                line = line.rstrip('\r\n')
-                self.__KEY_DICT__[DICT_KEYS[i]] = line
-                i += 1
+        # キー設定
+        CK = os.environ['TW_CONSUMER_KEY']
+        CS = os.environ['TW_CONSUMER_SECRET']
+        AT = os.environ['TW_ACCESS_TOKEN_KEY']
+        AS = os.environ['TW_ACCESS_TOKEN_SECRET']
 
-        # Twitterオブジェクトを保持
-        auth = tweepy.OAuthHandler(self.__KEY_DICT__['CK'],
-                                   self.__KEY_DICT__['CS'])
-        auth.set_access_token(self.__KEY_DICT__['AT'], self.__KEY_DICT__['AS'])
+        # 認証
+        auth = tweepy.OAuthHandler(CK, CS)
+        auth.set_access_token(AT, AS)
 
         # APIインスタンス
         self.api = tweepy.API(auth)
@@ -91,3 +88,17 @@ class TweetBot:
         # print('ERROR : リツイートに失敗しました。')
         logger.log(40, 'リツイートに失敗しました。')
         return None
+
+
+def main():
+    t = TweetBot()
+
+    # テストツイート(乱打すると規制かかるので注意)
+    msg = 'This is test.\n'
+    msg += '{}'.format(datetime.datetime.now())
+
+    t.api.update_status(msg)
+
+
+if __name__ == '__main__':
+    main()
