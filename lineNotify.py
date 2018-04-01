@@ -59,6 +59,7 @@ class LineNotify:
                 time.sleep(i * 5)
             else:
                 logger.log(20, 'response={}'.format(response))
+                logger.log(20, 'LINE Notify \n {}'.format(msg))
                 return response
         logger.log(40, 'ポストに失敗しました。')
         return None

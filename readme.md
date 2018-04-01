@@ -3,6 +3,7 @@ NIT-Gifu Lesson-Change-PDF Support Tool
 
 岐阜高専における授業変更pdfの表を扱いやすくするためのpythonのモジュール群です。
 例えばpdfをcsv形式に変換したり出来ます。
+あとオマケで年間行事予定も通知できます。(ゴリ押し)
 
 
 ## できること
@@ -11,6 +12,7 @@ NIT-Gifu Lesson-Change-PDF Support Tool
 * つぶやく
 * クラスラインに通知
 * ~~電子黒板に掲示~~
+* 年間行事予定の通知
 
 
 ## 使い方
