@@ -24,7 +24,7 @@ def search_for_date(annual_datas, date):
         annual_datas {pandas.DataFrame} -- 年間行事予定のデータ
 
     Keyword Arguments:
-        today {any} -- 検索する日付 (default: {datetime.date.today()})
+        today {any} -- 検索する日付)
 
     Returns:
         pandas.DataFrame -- 検索結果
