@@ -84,9 +84,7 @@ class LineNotify:
 def main():
     """テスト用
     """
-    print(os.environ.items())
     ln = LineNotify()
-    print(ln.tokens)
     msgs = ['hello', 'world']
     ln.multi_post(msgs)
 
