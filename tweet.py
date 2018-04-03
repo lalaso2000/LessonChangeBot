@@ -8,6 +8,7 @@ import logging.config
 import pandas as pd
 import annualData as ad
 import pandas.tseries.offsets as offsets
+import db
 
 # 明日の授業変更を持ってくる
 data_5e_tomorrow = pd.read_csv('tomorrow.csv')
@@ -47,3 +48,7 @@ for m in msgs:
 with open('ids.csv', 'w') as f:
     writer = csv.writer(f, lineterminator='\n')
     writer.writerow(ids)
+
+# csvをdropboxに保存
+dbx = db.DB()
+dbx.upload('./ids.csv', '/ids.csv')
