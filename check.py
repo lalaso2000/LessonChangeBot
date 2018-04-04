@@ -4,10 +4,18 @@
 import lessonData
 import datetime
 import logging.config
+import db
 
 # ロガー設定
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger()
+
+# dropboxからローカルデータを取得
+dbx = db.DB()
+dbx.download('./buf.csv', '/buf.csv')
+dbx.download('./keijiyou.pdf', '/keijiyou.pdf')
+dbx.download('./tomorrow.csv', '/tomorrow.csv')
+dbx.download('./annual.csv', '/annual.csv')
 
 # 授業変更をチェックする
 update = lessonData.updateCheck()
@@ -40,3 +48,8 @@ logger.log(20, '検索結果 \n {}'.format(data_5e_tomorrow))
 
 # csv出力しておく
 data_5e_tomorrow.to_csv('tomorrow.csv', encoding='utf-8')
+
+# ローカルデータをdropboxにアップロード
+dbx.upload('./buf.csv', '/buf.csv')
+dbx.upload('./keijiyou.pdf', '/keijiyou.pdf')
+dbx.upload('./tomorrow.csv', '/tomorrow.csv')

@@ -4,6 +4,7 @@
 import requests
 import time
 from logging import getLogger
+import os
 
 # ロガー設定
 logger = getLogger()
@@ -13,7 +14,7 @@ class LineNotify:
     """Line Notifyのクラス
     """
 
-    def __init__(self, token_file_path='line_token.txt'):
+    def __init__(self):
         """初期化(トークン取得)
 
         Keyword Arguments:
@@ -22,13 +23,11 @@ class LineNotify:
 
         # トークン取得
         self.tokens = []
-        with open(token_file_path) as f:
-            for line in f:
-                line = line.rstrip('\r\n')
-                if len(line) != 0 and line[0] != '#':
-                    # '#'から始まるのはコメントアウト
-                    # 空行も無視
-                    self.tokens.append(line)
+        # 環境変数からトークンを探す
+        # LINE Notifyのトークンは'L_'から始まる
+        for k, v in os.environ.items():
+            if k[0:2] == 'L_':
+                self.tokens.append(v)
 
     def _single_post(self, token, msg):
         """シングルポスト
@@ -86,7 +85,6 @@ def main():
     """テスト用
     """
     ln = LineNotify()
-    print(ln.tokens)
     msgs = ['hello', 'world']
     ln.multi_post(msgs)
 

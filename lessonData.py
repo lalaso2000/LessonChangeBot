@@ -299,14 +299,15 @@ def search_for_date(data, date=datetime.date(1970, 1, 1)):
     Returns:
         dataFrame -- 検索結果
     """
-    return data[data['date'] == date]
+    t = pd.to_datetime(date)
+    return data.ix[data['date'] == t]
 
 
 def main():
     """テスト用関数
     """
     # バッファ(csv)からデータ取得
-    # cd = get_data(True)
+    cd = get_data(True)
 
     # pdfからデータ取得(重い)
     # pdfが更新された時以外はバッファから読む
@@ -316,13 +317,13 @@ def main():
     # update = updateCheck(
     #     url='https://www.dropbox.com/s/p6hlhjp5f5v3y50/keijiyou.pdf?dl=1',
     #     file_path='test.pdf')  # デバック用
-    update = updateCheck(
-        url='https://lalasotesttest/testtest/test.pdf',
-        file_path='test.pdf')  # デバック用
-    if update:
-        cd = get_data(False, pdf_path='test.pdf', csv_path='test.csv')
-    else:
-        cd = get_data(True)
+    # update = updateCheck(
+    #     url='https://lalasotesttest/testtest/test.pdf',
+    #     file_path='test.pdf')  # デバック用
+    # if update:
+    #     cd = get_data(False, pdf_path='test.pdf', csv_path='test.csv')
+    # else:
+    #     cd = get_data(True)
 
     # とりあえず出力
     print('===== all data =====')
@@ -362,10 +363,16 @@ def main():
     # mapを使ってそれぞれの要素の一文字目を取り出し、
     # それがEかどうかをチェック
     print('===== 5E data =====')
-    e5_data = cd[(cd.grade == 5) & (cd.department.map(lambda s: s[0]) == 'E')]
+    e5_data = search_for_class(cd, grade=5, department='E')
     print(e5_data)
     # レコード長はlenで取得
     print(len(e5_data.index))
+
+    # 今日の授業変更を抽出
+    print("===== today's data =====")
+    today = datetime.date.today()
+    today_data = search_for_date(cd, today)
+    print(today_data)
 
 
 if __name__ == '__main__':
